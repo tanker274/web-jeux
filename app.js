@@ -1,42 +1,66 @@
 // ====================================
 // TOURNOI DE JEUX DE SOCIÉTÉ - APP.JS
-// AVEC SYSTÈME DE SÉCURITÉ ET VOTES
+// SYSTÈME D'AUTHENTIFICATION PAR CODE
 // ====================================
 
 document.addEventListener('DOMContentLoaded', async function() {
 
 	// ====================================
-	// SYSTÈME DE SÉCURITÉ PAR IP
+	// SYSTÈME D'AUTHENTIFICATION PAR CODE
+	// (Alternative à l'IP pour GitHub Pages)
 	// ====================================
 	
-	const AUTHORIZED_IPS = [
-		'127.0.0.1',        // Localhost
-		'192.168.1.100',    // Exemple - MODIFIE CETTE LISTE
-		'192.168.1.101',    
+	// Liste des codes d'accès autorisés (CHANGE CES CODES !)
+	const ADMIN_CODES = [
+		'192.168.1.95',      // Code pour les organisateurs
+		'ORGA123',        // Code alternatif
+		'TOURNOI2026'     // Autre code
 	];
 
-	let userIP = null;
+	let userCode = null;
 	let isAuthorized = false;
 
-	async function getUserIP() {
-		try {
-			const response = await fetch('https://api.ipify.org?format=json');
-			const data = await response.json();
-			userIP = data.ip;
-			console.log('IP détectée:', userIP);
-		} catch (e) {
-			console.log('Mode local détecté');
-			userIP = '127.0.0.1';
+	// Vérifier si un code est déjà stocké
+	function checkStoredAuth() {
+		const stored = localStorage.getItem('tournoi_auth_code');
+		if (stored && ADMIN_CODES.includes(stored)) {
+			userCode = stored;
+			isAuthorized = true;
+			return true;
 		}
-		
-		isAuthorized = AUTHORIZED_IPS.includes(userIP);
-		updateUIPermissions();
-		showIPStatus();
+		return false;
 	}
 
-	function showIPStatus() {
+	// Demander le code d'accès
+	function promptForCode() {
+		if (checkStoredAuth()) {
+			showAuthStatus(true);
+			updateUIPermissions();
+			return;
+		}
+
+		const code = prompt('🔐 Code d\'accès administrateur\n\n(Laissez vide pour mode visiteur)');
+		
+		if (code && ADMIN_CODES.includes(code.trim())) {
+			userCode = code.trim();
+			isAuthorized = true;
+			localStorage.setItem('tournoi_auth_code', userCode);
+			showAuthStatus(true);
+		} else if (code) {
+			alert('❌ Code incorrect. Vous êtes en mode visiteur.');
+			isAuthorized = false;
+			showAuthStatus(false);
+		} else {
+			isAuthorized = false;
+			showAuthStatus(false);
+		}
+		
+		updateUIPermissions();
+	}
+
+	function showAuthStatus(authorized) {
 		const statusDiv = document.createElement('div');
-		statusDiv.id = 'ip-status';
+		statusDiv.id = 'auth-status';
 		statusDiv.style.cssText = `
 			position: fixed;
 			top: 80px;
@@ -48,24 +72,37 @@ document.addEventListener('DOMContentLoaded', async function() {
 			z-index: 999;
 			box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 			transition: all 0.3s ease;
+			cursor: pointer;
 		`;
 		
-		if (isAuthorized) {
+		if (authorized) {
 			statusDiv.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
 			statusDiv.style.color = 'white';
-			statusDiv.innerHTML = `🔓 Accès autorisé<br><span style="font-size:0.75rem;opacity:0.9">IP: ${userIP}</span>`;
+			statusDiv.innerHTML = `🔓 Mode administrateur<br><span style="font-size:0.75rem;opacity:0.9">Cliquez pour vous déconnecter</span>`;
+			statusDiv.onclick = logout;
 		} else {
 			statusDiv.style.background = 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)';
 			statusDiv.style.color = 'white';
-			statusDiv.innerHTML = `👤 Mode visiteur<br><span style="font-size:0.75rem;opacity:0.9">IP: ${userIP}</span>`;
+			statusDiv.innerHTML = `👤 Mode visiteur<br><span style="font-size:0.75rem;opacity:0.9">Cliquez pour entrer un code</span>`;
+			statusDiv.onclick = promptForCode;
 		}
 		
-		document.body.appendChild(statusDiv);
+		// Supprimer l'ancien status s'il existe
+		const oldStatus = document.getElementById('auth-status');
+		if (oldStatus) oldStatus.remove();
 		
-		setTimeout(() => {
-			statusDiv.style.opacity = '0';
-			setTimeout(() => statusDiv.remove(), 300);
-		}, 5000);
+		document.body.appendChild(statusDiv);
+	}
+
+	function logout() {
+		if (confirm('Voulez-vous vous déconnecter du mode administrateur ?')) {
+			localStorage.removeItem('tournoi_auth_code');
+			isAuthorized = false;
+			userCode = null;
+			showAuthStatus(false);
+			updateUIPermissions();
+			location.reload(); // Recharger pour réinitialiser l'interface
+		}
 	}
 
 	function updateUIPermissions() {
@@ -81,7 +118,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 					btn.disabled = true;
 					btn.style.opacity = '0.5';
 					btn.style.cursor = 'not-allowed';
-					btn.title = 'Accès refusé - IP non autorisée';
+					btn.title = 'Accès refusé - Code administrateur requis';
 				}
 			});
 			
@@ -90,7 +127,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 				if (!input.id.includes('Search') && !input.id.includes('sort')) {
 					input.disabled = true;
 					input.style.opacity = '0.6';
-					input.title = 'Accès refusé - IP non autorisée';
+					input.title = 'Accès refusé - Code administrateur requis';
 				}
 			});
 		}
@@ -98,14 +135,17 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 	function checkPermission(actionName) {
 		if (!isAuthorized) {
-			alert(`🔒 Accès refusé!\n\nVotre IP (${userIP}) n'est pas autorisée à ${actionName}.\n\nSeules les IPs autorisées peuvent modifier les données.`);
+			const retry = confirm(`🔒 Accès refusé!\n\nVous devez être en mode administrateur pour ${actionName}.\n\nVoulez-vous entrer un code maintenant ?`);
+			if (retry) {
+				promptForCode();
+			}
 			return false;
 		}
 		return true;
 	}
 
-	// CORRECTION IMPORTANTE : Attendre que l'IP soit récupérée
-	await getUserIP();
+	// Initialiser l'authentification
+	promptForCode();
 
 	// ====================================
 	// NAVIGATION
@@ -168,7 +208,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 			timeEnd: "15:30",
 			place: "Salle A",
 			participants: "4-6 joueurs",
-			sessions: [] // Historique des sessions jouées
+			sessions: []
 		},
 		{
 			id: "av2",
@@ -633,7 +673,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 			sessionsDiv.innerHTML = '<div class="small muted" style="text-align:center;padding:20px;">Aucune session jouée pour l\'instant</div>';
 		}
 
-		// Bouton pour marquer comme joué
+		// Bouton pour marquer comme joué (disponible pour TOUT LE MONDE)
 		const voteBtn = document.getElementById('voteGameBtn');
 		voteBtn.textContent = '✓ Marquer comme joué';
 		voteBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
@@ -641,14 +681,8 @@ document.addEventListener('DOMContentLoaded', async function() {
 		gameModal.classList.add('active');
 	}
 
-	// Fonction pour voter (marquer comme joué)
+	// Fonction pour voter (ACCESSIBLE À TOUS)
 	window.voteForGame = function(gameId) {
-		// CORRECTION : Vérifier que l'IP est disponible
-		if (!userIP) {
-			alert('⚠️ Erreur : Impossible de détecter votre IP. Veuillez rafraîchir la page.');
-			return;
-		}
-
 		const game = games.find(g => g.id === gameId);
 		if (!game) return;
 
@@ -660,22 +694,21 @@ document.addEventListener('DOMContentLoaded', async function() {
 			game.sessions = [];
 		}
 
-		// Ajouter une nouvelle session
+		// Ajouter une nouvelle session (plus besoin d'IP)
 		game.sessions.push({
 			date: dateStr,
 			time: timeStr,
-			votes: 1,
-			votedBy: [userIP]
+			votes: 1
 		});
 
 		if (save('tournoi_games', games)) {
 			alert(`✓ Session ajoutée !\n\n${game.name} a été marqué comme joué.\nVous pouvez rejouer et revoter autant de fois que vous voulez !`);
 			renderGames();
-			openGameModal(gameId); // Rafraîchir la modal
+			openGameModal(gameId);
 		}
 	};
 
-	// Fonction pour supprimer une session
+	// Fonction pour supprimer une session (ADMIN SEULEMENT)
 	window.removeSession = function(gameId, sessionIndex) {
 		if (!checkPermission('supprimer une session')) return;
 		if (!confirm('Voulez-vous vraiment supprimer cette session ?')) return;
@@ -703,7 +736,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 		}
 	});
 
-	// Bouton voter
+	// Bouton voter (accessible à tous)
 	document.getElementById('voteGameBtn').addEventListener('click', () => {
 		if (currentGameId) {
 			voteForGame(currentGameId);
