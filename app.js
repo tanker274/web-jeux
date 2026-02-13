@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	const AUTHORIZED_IPS = [
 		'127.0.0.1',        // Localhost
 		'192.168.1.100',    // Exemple - MODIFIE CETTE LISTE
-		'192.168.1.101',    
+		'192.168.56.1',    
 	];
 
 	let userIP = null;
