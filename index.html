@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="utf-8" />
+	<title>Tournoi de Jeux de Société</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<header>
+		<h1>Tournoi de Jeux de Société</h1>
+		<div class="subtitle">Classement, jeux à venir et certificats — Données synchronisées en temps réel</div>
+		<nav>
+			<button class="active" data-section="accueil">Accueil</button>
+			<button data-section="classement">Classement</button>
+			<button data-section="jeux">Jeux à venir</button>
+			<button data-section="certificats">Certificats</button>
+		</nav>
+	</header>
+
+	<div class="container">
+		<main>
+			<!-- ACCUEIL -->
+			<section id="section-accueil" class="card">
+				<div class="card-header">
+					<div>
+						<div class="card-title">Bienvenue</div>
+						<div class="card-subtitle">Gère ton tournoi, ajoute des joueurs, planifie des jeux et génère des certificats.</div>
+					</div>
+					<span class="badge" id="syncStatus">🔄 Connexion...</span>
+				</div>
+				<p class="muted">Les données sont synchronisées en temps réel avec tous les participants.</p>
+				<div class="info-grid">
+					<div class="info-pill">📅 <strong>Date</strong> : à compléter</div>
+					<div class="info-pill">📍 <strong>Lieu</strong> : à compléter</div>
+					<div class="info-pill">👥 <strong>Joueurs</strong> : <strong id="countPlayers">17</strong></div>
+					<div class="info-pill">🎲 <strong>Type</strong> : Jeux de société</div>
+				</div>
+			</section>
+
+			<!-- CLASSEMENT -->
+			<section id="section-classement" class="card" style="display:none;">
+				<div class="card-header">
+					<div>
+						<div class="card-title">Classement du tournoi</div>
+						<div class="card-subtitle">Triable et modifiable en direct</div>
+					</div>
+					<span class="badge">17 joueurs</span>
+				</div>
+
+				<div class="controls">
+					<input id="searchInput" placeholder="Rechercher un joueur..." />
+					<select id="sortSelect">
+						<option value="victoires_desc">Trier par victoires ↓</option>
+						<option value="victoires_asc">Trier par victoires ↑</option>
+						<option value="jeux_desc">Trier par jeux ↓</option>
+						<option value="jeux_asc">Trier par jeux ↑</option>
+						<option value="nom_asc">Trier par nom A→Z</option>
+					</select>
+					<button id="resetBtn" class="secondary">Réinitialiser</button>
+				</div>
+
+				<div class="form-grid">
+					<input id="newNom" placeholder="Nom" />
+					<input id="newPrenom" placeholder="Prénom" />
+					<input id="newVictoires" type="number" min="0" placeholder="Victoires" />
+					<input id="newJeux" type="number" min="0" placeholder="Jeux joués" />
+				</div>
+				<div class="form-actions">
+					<button id="addPlayerBtn">Ajouter / Mettre à jour</button>
+				</div>
+
+				<div class="table-wrapper">
+					<table id="classementTable">
+						<thead>
+							<tr>
+								<th data-sort="rang">Rang</th>
+								<th data-sort="nom">Nom</th>
+								<th data-sort="prenom">Prénom</th>
+								<th data-sort="victoires">Victoires</th>
+								<th data-sort="jeux">Jeux joués</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+			</section>
+
+			<!-- JEUX À VENIR -->
+			<section id="section-jeux" class="card" style="display:none;">
+				<div class="card-header">
+					<div>
+						<div class="card-title">Jeux à venir</div>
+						<div class="card-subtitle">Découvre tous les jeux programmés avec leurs détails</div>
+					</div>
+					<button id="addGameBtn" style="padding: 8px 16px;">➕ Ajouter un jeu</button>
+				</div>
+
+				<!-- Filtres par catégorie -->
+				<div class="category-filters">
+					<button class="category-btn active" data-category="all">Tous</button>
+					<button class="category-btn" data-category="aventure">🗺️ Aventure</button>
+					<button class="category-btn" data-category="strategie">♟️ Stratégie</button>
+					<button class="category-btn" data-category="culture">📚 Culture</button>
+					<button class="category-btn" data-category="jeux-video">🎮 Jeux vidéo</button>
+				</div>
+
+				<!-- Recherche -->
+				<div class="search-bar">
+					<input id="gameSearch" placeholder="Rechercher un jeu..." />
+				</div>
+
+				<!-- Grille de jeux -->
+				<div id="gamesGrid" class="games-grid">
+					<!-- Les jeux seront ajoutés ici dynamiquement -->
+				</div>
+			</section>
+
+			<!-- CERTIFICATS -->
+			<section id="section-certificats" class="card" style="display:none;">
+				<div class="card-header">
+					<div>
+						<div class="card-title">Certificat de participation</div>
+						<div class="card-subtitle">Génère un certificat personnalisé</div>
+					</div>
+					<span class="badge">Aperçu</span>
+				</div>
+
+				<div class="cert-layout">
+					<div class="cert-form">
+						<label class="small">Nom</label>
+						<input id="certNom" placeholder="Ex : Martin" />
+						<label class="small">Prénom</label>
+						<input id="certPrenom" placeholder="Ex : Laura" />
+						<label class="small">Texte</label>
+						<textarea id="certTexte" rows="3">a participé officiellement au tournoi de jeux de société</textarea>
+						<label class="small">Date</label>
+						<input id="certDate" placeholder="Ex : 15 février 2026" />
+						<label class="small">Organisateur</label>
+						<input id="certOrganisateur" placeholder="Ex : Club Jeux & Fun" />
+						<div style="margin-top:8px;display:flex;justify-content:flex-end">
+							<button id="updateCertBtn">Mettre à jour</button>
+						</div>
+					</div>
+
+					<div class="certificate-preview">
+						<div class="cert-title">CERTIFICAT DE PARTICIPATION</div>
+						<div class="cert-name" id="previewName">Nom Prénom</div>
+						<div class="cert-text" id="previewText">a participé officiellement au tournoi de jeux de société</div>
+						<div class="cert-footer" style="display:flex;justify-content:space-between;font-size:0.85rem;color:var(--muted)">
+							<div><strong>Date</strong><br /><span id="previewDate">À compléter</span></div>
+							<div><strong>Organisateur</strong><br /><span id="previewOrg">À compléter</span></div>
+						</div>
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<footer>Site synchronisé en temps réel — Hébergé sur GitHub Pages</footer>
+	</div>
+
+	<!-- MODAL DÉTAILS DU JEU -->
+	<div id="gameModal" class="modal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 id="modalTitle">Titre du jeu</h2>
+				<button class="modal-close" id="closeModal">✕</button>
+			</div>
+			<div class="modal-body">
+				<div class="modal-category" id="modalCategory"></div>
+				<div class="modal-description" id="modalDescription"></div>
+				
+				<div class="modal-section">
+					<h3>📅 Horaires</h3>
+					<div id="modalSchedules" class="schedules-list"></div>
+				</div>
+
+				<div class="modal-section">
+					<h3>📍 Lieux</h3>
+					<div id="modalPlaces" class="places-list"></div>
+				</div>
+
+				<div class="modal-section">
+					<h3>👥 Participants attendus</h3>
+					<div id="modalParticipants"></div>
+				</div>
+
+				<div id="modalSessions"></div>
+			</div>
+			<div class="modal-footer">
+				<button id="voteGameBtn" style="background: #10b981;">✓ Marquer comme joué</button>
+				<button id="editGameBtn" class="secondary">Éditer</button>
+				<button id="deleteGameBtn" style="background: #ef4444;">Supprimer</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- MODAL AJOUTER/ÉDITER JEU -->
+	<div id="addGameModal" class="modal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 id="formModalTitle">Ajouter un jeu</h2>
+				<button class="modal-close" id="closeAddModal">✕</button>
+			</div>
+			<div class="modal-body">
+				<div class="form-grid-modal">
+					<div>
+						<label>Nom du jeu *</label>
+						<input id="formGameName" placeholder="Ex: Catan" />
+					</div>
+					<div>
+						<label>Catégorie *</label>
+						<select id="formGameCategory">
+							<option value="aventure">🗺️ Aventure</option>
+							<option value="strategie">♟️ Stratégie</option>
+							<option value="culture">📚 Culture</option>
+							<option value="jeux-video">🎮 Jeux vidéo</option>
+						</select>
+					</div>
+					<div>
+						<label>Difficulté *</label>
+						<select id="formGameDifficulty">
+							<option value="Facile">✓ Facile</option>
+							<option value="Difficile">⚡ Difficile</option>
+						</select>
+					</div>
+					<div style="grid-column: 1 / -1;">
+						<label>Description</label>
+						<textarea id="formGameDescription" rows="3" placeholder="Décris le jeu..."></textarea>
+					</div>
+					<div>
+						<label>Date *</label>
+						<input id="formGameDate" type="date" />
+					</div>
+					<div>
+						<label>Heure de début *</label>
+						<input id="formGameTime" type="time" />
+					</div>
+					<div>
+						<label>Heure de fin</label>
+						<input id="formGameTimeEnd" type="time" />
+					</div>
+					<div>
+						<label>Lieu *</label>
+						<input id="formGamePlace" placeholder="Ex: Salle A" />
+					</div>
+					<div style="grid-column: 1 / -1;">
+						<label>Participants attendus</label>
+						<input id="formGameParticipants" placeholder="Ex: 4-6 joueurs" />
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button id="cancelAddBtn" class="secondary">Annuler</button>
+				<button id="saveGameBtn">Sauvegarder</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Firebase SDK -->
+	<script type="module">
+		// Import Firebase modules
+		import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+		import { getDatabase, ref, set, get, onValue, push, remove, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+		// ⚠️ CONFIGURATION FIREBASE - À REMPLACER PAR TES PROPRES CLÉS
+		const firebaseConfig = {
+			apiKey: "VOTRE_API_KEY",
+			authDomain: "VOTRE_PROJECT_ID.firebaseapp.com",
+			databaseURL: "https://VOTRE_PROJECT_ID-default-rtdb.firebaseio.com",
+			projectId: "VOTRE_PROJECT_ID",
+			storageBucket: "VOTRE_PROJECT_ID.appspot.com",
+			messagingSenderId: "VOTRE_SENDER_ID",
+			appId: "VOTRE_APP_ID"
+		};
+
+		// Initialiser Firebase
+		const app = initializeApp(firebaseConfig);
+		const database = getDatabase(app);
+
+		// Rendre disponible globalement
+		window.firebaseDB = database;
+		window.firebaseRef = ref;
+		window.firebaseSet = set;
+		window.firebaseGet = get;
+		window.firebaseOnValue = onValue;
+		window.firebasePush = push;
+		window.firebaseRemove = remove;
+		window.firebaseUpdate = update;
+
+		console.log('🔥 Firebase initialisé avec succès');
+	</script>
+
+	<script src="app.js"></script>
+</body>
+</html>
