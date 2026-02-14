@@ -463,6 +463,19 @@ const defaultGames = [
 		place: "Espace Gaming",
 		participants: "2-8 joueurs",
 		sessions: []
+	},
+	{
+		id: "jv14",
+		name: "Dominos",
+		category: "strategie",
+		difficulty: "Facile",
+		description: "NA",
+		date: "2026-02-27",
+		time: "NA",
+		timeEnd: "NA",
+		place: "B",
+		participants: "2-8 joueurs",
+		sessions: []
 	}
 ];
 
