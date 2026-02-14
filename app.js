@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	// SYSTÈME DE SÉCURITÉ PAR CODE ADMIN
 	// ====================================
 	
-	const ADMIN_CODE = "1234"; // MODIFIE TON CODE ICI
+	const ADMIN_CODE = "ADIN274fr"; // MODIFIE TON CODE ICI
 	let isAuthorized = false;
 
 	// Création du bouton de connexion Admin (flottant en bas à droite)
