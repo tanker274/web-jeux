@@ -159,6 +159,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		{ id: "st2", name: "Puissance 4", category: "strategie", difficulty: "Facile", description: "Alignez 4 jetons.", date: "2026-02-21", time: "15:00", place: "Table B", participants: "2", sessions: [] },
 		{ id: "st3", name: "Ligretto", category: "strategie", difficulty: "Facile", description: "Rapidité et cartes.", date: "2026-02-21", time: "15:30", place: "Table B", participants: "2-4", sessions: [] },
 		{ id: "st4", name: "Skyjo", category: "strategie", difficulty: "Facile", description: "Minimisez vos points.", date: "2026-02-21", time: "16:00", place: "Table A", participants: "2-8", sessions: [] },
+		{ id: "st5", name: "Dominos", category: "strategie", difficulty: "Facile", description: "NA.", date: "2026-02-21", time: "16:00", place: "Table A", participants: "2-8", sessions: [] },
+
 
 		// CULTURE
 		{ id: "cu1", name: "Quiz des garçons", category: "culture", difficulty: "Facile", description: "Testez votre culture.", date: "2026-02-22", time: "14:00", place: "Salon", participants: "2-10", sessions: [] },
