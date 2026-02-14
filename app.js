@@ -486,6 +486,32 @@ document.addEventListener('DOMContentLoaded', function() {
 			place: "Espace Gaming",
 			participants: "2-8 joueurs",
 			sessions: []
+		},
+		{
+			id: "jv13",
+			name: "Dominos",
+			category: "Stratergie",
+			difficulty: "Facile",
+			description: "NA",
+			date: "2026-02-27",
+			time: "16:00",
+			timeEnd: "17:00",
+			place: "B",
+			participants: "2-8 joueurs",
+			sessions: []
+		},
+		{
+			id: "jv13",
+			name: "beat saber",
+			category: "Stratergie",
+			difficulty: "Dificile",
+			description: "NA",
+			date: "2026-02-27",
+			time: "16:00",
+			timeEnd: "17:00",
+			place: "Espace Gaming",
+			participants: "2-8 joueurs",
+			sessions: []
 		}
 	];
 
