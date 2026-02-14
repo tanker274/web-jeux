@@ -1070,12 +1070,3 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.replace(url + "?reload=" + Date.now());
     }
 })();
-
-// Exemple de fetch sans cache
-fetch("data.json", {
-    cache: "no-store"
-})
-.then(res => res.text())
-.then(data => {
-    console.log("Données fraîches :", data);
-});
