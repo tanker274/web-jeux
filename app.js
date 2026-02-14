@@ -486,6 +486,19 @@ document.addEventListener('DOMContentLoaded', function() {
 			place: "Espace Gaming",
 			participants: "2-8 joueurs",
 			sessions: []
+		},
+		{
+			id: "jv14",
+			name: "beat saber",
+			category: "jeux-video",
+			difficulty: "Difficile",
+			description: "Jeu de dessin créatif. Faites deviner vos œuvres !",
+			date: "2026-02-27",
+			time: "16:00",
+			timeEnd: "17:00",
+			place: "Espace Gaming",
+			participants: "2-8 joueurs",
+			sessions: []
 		}
 	];
 
