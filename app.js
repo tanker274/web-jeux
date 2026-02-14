@@ -1063,3 +1063,19 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 
 });
+ Force le rechargement sans cache
+(function() {
+    if (!window.location.search.includes("reload=")) {
+        const url = window.location.href.split("?")[0];
+        window.location.replace(url + "?reload=" + Date.now());
+    }
+})();
+
+// Exemple de fetch sans cache
+fetch("data.json", {
+    cache: "no-store"
+})
+.then(res => res.text())
+.then(data => {
+    console.log("Données fraîches :", data);
+});
